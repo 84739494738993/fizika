@@ -19,7 +19,7 @@ logged_in_users = {}
 
 @app.route("/")
 def index():
-    return send_file("index\login.html")
+    return send_file("index/login.html")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -27,11 +27,11 @@ def login():
     password = request.form.get("password")
     if username == USERNAME_admin and password == PASSWORD_admin:
         # Запоминаем сессию (например, в куках, здесь упрощённо — без безопасности)
-        response = send_file("index\index_admin.html")
+        response = send_file("index/index_admin.html")
         response.set_cookie("user", "admin")
         return response
     elif username == USERNAME and password == PASSWORD:
-        response = send_file("index\index.html")
+        response = send_file("index/index.html")
         response.set_cookie("user", "user")
         return response
     else:
