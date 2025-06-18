@@ -1,0 +1,58 @@
+.all{
+    height: 100%;
+    background-color: aqua;
+}
+.globaldiv{
+    height: 100%;
+    background-color: rgb(222, 222, 222);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.globaldiv > div {
+    background-color: rgb(196, 196, 196);
+    height: 15%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: solid 2px;color: black ;
+    margin-top: 30px;
+}
+p{
+    font-size: 3vh;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+input{
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    width: 80%;
+    height: 40px;
+    font-size: 3vh;
+    margin-bottom: 10px;
+}
+button{
+    width: 50%;
+    height: 70px;
+    font-size: 6vh;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 40px;
+    margin-bottom: 3
+    0px;
+}
+button:hover{
+    background-color: rgb(70, 132, 72);
+}
+select{
+    width: 50%;
+    height: 30px;
+    margin-top: 20px;
+    background-color: #4caf50;
+    color: white;
+}
