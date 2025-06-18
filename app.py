@@ -47,8 +47,10 @@ def get_data():
     data = doc.to_dict()
     
     if user == "admin":
-        # Полный доступ для админа
-        return jsonify(data)
+        return jsonify({
+            "Name_Tasks": data.get("Name_Tasks", []),
+            "Answers": data.get("Answers", [])
+        })
     elif user == "user":
         # Только списки для обычного пользователя
         return jsonify({
