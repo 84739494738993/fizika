@@ -1,9 +1,17 @@
 from flask import Flask, request, send_file, jsonify
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-cred = credentials.Certificate("secret-firebase-key.json")
-firebase_admin.initialize_app(cred)
+firebase_key_json = os.environ.get('FIREBASE_KEY_JSON')
+
+if firebase_key_json:
+    cred = credentials.Certificate(json.loads(firebase_key_json))
+    firebase_admin.initialize_app(cred)
+else:
+    raise Exception("FIREBASE_KEY_JSON environment variable not found")
+
 db = firestore.client()  # <- тут создаём объект db
 
 app = Flask(__name__)
@@ -19,7 +27,7 @@ logged_in_users = {}
 
 @app.route("/")
 def index():
-    return send_file("index\login.html")
+    return send_file("index\\login.html")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -27,11 +35,11 @@ def login():
     password = request.form.get("password")
     if username == USERNAME_admin and password == PASSWORD_admin:
         # Запоминаем сессию (например, в куках, здесь упрощённо — без безопасности)
-        response = send_file("index\index_admin.html")
+        response = send_file("index\\index_admin.html")
         response.set_cookie("user", "admin")
         return response
     elif username == USERNAME and password == PASSWORD:
-        response = send_file("index\index.html")
+        response = send_file("index\\index.html")
         response.set_cookie("user", "user")
         return response
     else:
