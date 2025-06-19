@@ -1,106 +1,57 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-import { getFirestore, doc, getDoc,updateDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+let Answers = [];
+let Name_Tasks = [];
 
-//Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-//TODO: Add SDKs for Firebase products that you want to use
-//https:firebase.google.com/docs/web/setup#available-libraries
+fetch("/data")
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) throw new Error(data.error);
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyB726KJeTFGqUvtxNuWudI9jrmLYyDopGU",
-  authDomain: "fizik-b1450.firebaseapp.com",
-  projectId: "fizik-b1450",
-  storageBucket: "fizik-b1450.firebasestorage.app",
-  messagingSenderId: "492304108627",
-  appId: "1:492304108627:web:f51d4add68abe274044aa6"
-};
+    Answers = data.Answers || [];
+    Name_Tasks = data.Name_Tasks || [];
+    buildUI();
+  })
+  .catch(err => {
+    console.error("Ошибка загрузки данных:", err);
+  });
 
-// Инициализация Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+function buildUI() {
+  const globalDiv = document.createElement("div");
+  globalDiv.className = "globaldiv";
 
-let Answers;
-let Name_Tasks;
- 
-const docRef = doc(db, "Information", "o6FJZwzY83MKzYZRk2Vd");
+  for (let i = 0; i < Name_Tasks.length; i++) {
+    const div = document.createElement("div");
 
-const fetchData = async () => {
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    // console.log("datetask:", data.Answers);
-    // console.log("lessons:", data.Name_Tasks);
-    Answers = data.Answers;
-    Name_Tasks = data.Name_Tasks;
-  } else {
-    console.log("Документ не найден");
-  }
-  // console.log(Answers,Name_Tasks)
+    const questionText = document.createElement("p");
+    questionText.textContent = Name_Tasks[i];
 
-
-function createGlobalDiv() {
-    let globalDiv = document.createElement('div');
-    globalDiv.className = "globaldiv";
-    return globalDiv;
-}
-function createDiv() {
-    let innerDiv = document.createElement('div');
-    return innerDiv;
-}
-function createButton(text) {
-    let btn = document.createElement('button');
-    btn.textContent = text;
-    return btn;
-}
-function createText(text) {
-    let txt = document.createElement('p');
-    txt.textContent = text;
-    // txt.style.display = 'none'
-    return txt;
-}
-function createInput(i) {
-    let input = document.createElement('input');
+    const input = document.createElement("input");
     input.placeholder = "Write Answer";
     input.className = "answer-input";
     input.dataset.index = i;
-    // txt.style.display = 'none'
-    return input;
-}
 
-let global_div = createGlobalDiv();  // Создали один глобальный контейнер
+    div.appendChild(questionText);
+    div.appendChild(input);
+    globalDiv.appendChild(div);
+  }
 
-for(let i = 0; i < Name_Tasks.length; i++) {
-    let div = createDiv(i);
-    let Text = createText(Name_Tasks[i]);
-    let Input = createInput(i);
+  const checkButton = document.createElement("button");
+  checkButton.textContent = "Проверить";
+  checkButton.id = "check-button";
 
-    div.appendChild(Text);
-    div.appendChild(Input);
-    global_div.appendChild(div);
-}
-let button = document.getElementById('button')
-global_div.appendChild(button);
-document.getElementById("all").appendChild(global_div);
-const answers = [];
-let mark = 0;
-document.getElementById("button").addEventListener("click", () => {
-    answers.length = 0;
-    mark = 0;
+  checkButton.addEventListener("click", () => {
     const inputs = document.querySelectorAll(".answer-input");
-    inputs.forEach((input) => {
-        answers.push(input.value);
-    });
+    const userAnswers = Array.from(inputs).map(i => i.value.trim().toLowerCase());
+    let mark = 0;
 
-    console.log("Ответы:", answers);
-    for(let i = 0; i < answers.length; i++) {
-    if (answers[i].toLowerCase()==Answers[i].toLowerCase()){
-      mark += 1
+    for (let i = 0; i < userAnswers.length; i++) {
+      if (userAnswers[i] === (Answers[i] || "").trim().toLowerCase()) {
+        mark++;
+      }
     }
+
+    alert(`Правильных ответов: ${mark} из ${Answers.length}`);
+  });
+
+  globalDiv.appendChild(checkButton);
+  document.getElementById("all").appendChild(globalDiv);
 }
-    console.log(mark)
-});
-};
-
-fetchData();
-
