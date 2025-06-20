@@ -31,6 +31,13 @@ input{
     font-size: 3vh;
     margin-bottom: 10px;
 }
+textarea {
+  width: 80%; /* или фиксированная ширина */
+  height: 50%;
+  font-size: 3vh; /* по желанию */
+  margin-bottom: 10px;
+}
+
 button{
     width: 50%;
     height: 70px;

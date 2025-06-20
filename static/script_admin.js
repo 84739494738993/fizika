@@ -43,9 +43,9 @@ function buildUI() {
   button.addEventListener("click", async () => {
     const answers = Array.from(document.querySelectorAll(".answer-input")).map(i => i.value);
     const questions = Array.from(document.querySelectorAll(".question-input")).map(i => i.value);
-
     await updateQuestions(questions);
     await updateAnswers(answers);
+    setTimeout(() => location.reload(), 3000);
   });
 
   button1.addEventListener("click", async () => {
@@ -101,19 +101,28 @@ function createDiv() {
   let innerDiv = document.createElement('div');
   return innerDiv;
 }
+// function createInput_question(i, j) {
+//   let input = document.createElement('input');
+//   input.value = j;
+//   input.className = "question-input";
+//   input.dataset.index = i;
+//   return input;
+// }
 function createInput_question(i, j) {
-  let input = document.createElement('input');
-  input.value = j;
-  input.className = "question-input";
-  input.dataset.index = i;
-  return input;
+  let textarea = document.createElement('textarea');
+  textarea.value = j;
+  textarea.className = "question-input";
+  textarea.dataset.index = i;
+  textarea.style.overflow = 'hidden';
+  return textarea;
 }
 function createInput_answer(i, j) {
-  let input = document.createElement('input');
-  input.value = j;
-  input.className = "answer-input";
-  input.dataset.index = i;
-  return input;
+  let textarea = document.createElement('textarea');
+  textarea.value = j;
+  textarea.className = "answer-input";
+  textarea.dataset.index = i;
+  textarea.style.overflow = 'hidden';
+  return textarea;
 }
 function addOption(text) {
   const select = document.getElementById("select");

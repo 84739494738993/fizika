@@ -4,7 +4,8 @@ from firebase_admin import credentials, firestore
 import os
 
 # Firebase init
-cred = credentials.Certificate("/etc/secrets/secret-firebase-key.json")
+# cred = credentials.Certificate("/etc/secrets/secret-firebase-key.json")
+cred = credentials.Certificate("secret-firebase-key.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 

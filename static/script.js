@@ -24,13 +24,14 @@ function buildUI() {
     const questionText = document.createElement("p");
     questionText.textContent = Name_Tasks[i];
 
-    const input = document.createElement("input");
-    input.placeholder = "Write Answer";
-    input.className = "answer-input";
-    input.dataset.index = i;
+    const textarea = document.createElement('textarea');
+    textarea.placeholder = "Write Answer";
+    textarea.className = "answer-input";
+    textarea.dataset.index = i;
+    textarea.style.overflow = 'hidden';
 
     div.appendChild(questionText);
-    div.appendChild(input);
+    div.appendChild(textarea);
     globalDiv.appendChild(div);
   }
 
@@ -50,8 +51,13 @@ function buildUI() {
     }
 
     alert(`Правильных ответов: ${mark} из ${Answers.length}`);
+    // let mark_text = document.createElement('p');
+    // mark_text.textContent = "Good your mark is: "+mark;
+    // globalDiv.style.display = "none";
+    // document.getElementById("all").appendChild(mark_text);
   });
 
   globalDiv.appendChild(checkButton);
   document.getElementById("all").appendChild(globalDiv);
 }
+
