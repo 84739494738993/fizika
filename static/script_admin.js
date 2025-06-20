@@ -114,11 +114,13 @@ function createInput_question(i, j) {
   textarea.className = "question-input";
   textarea.dataset.index = i;
   textarea.style.overflow = 'hidden';
-    const autoResize = () => {
-    textarea.style.height = 'auto'; // сброс высоты
-    textarea.style.height = textarea.scrollHeight + 'px';
+  textarea.style.minHeight = '40px';
+  const autoResize = () => {
+    textarea.style.height = 'auto'; // сброс
+    textarea.style.height = textarea.scrollHeight + 'px'; // подгонка под содержимое
   };
-  autoResize();
+  // Ставим высоту сразу (после вставки в DOM!)
+  setTimeout(autoResize, 0);
   textarea.addEventListener('input', autoResize);
   return textarea;
 }
@@ -128,13 +130,14 @@ function createInput_answer(i, j) {
   textarea.className = "answer-input";
   textarea.dataset.index = i;
   textarea.style.overflow = 'hidden';
+  textarea.style.minHeight = '40px';
   const autoResize = () => {
-    textarea.style.height = 'auto'; // сброс высоты
-    textarea.style.height = textarea.scrollHeight + 'px';
+    textarea.style.height = 'auto'; // сброс
+    textarea.style.height = textarea.scrollHeight + 'px'; // подгонка под содержимое
   };
-  autoResize();
+  // Ставим высоту сразу (после вставки в DOM!)
+  setTimeout(autoResize, 0);
   textarea.addEventListener('input', autoResize);
-
   return textarea;
 }
 function addOption(text) {

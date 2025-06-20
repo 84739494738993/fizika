@@ -29,11 +29,13 @@ function buildUI() {
     textarea.className = "answer-input";
     textarea.dataset.index = i;
     textarea.style.overflow = 'hidden';
-      const autoResize = () => {
-    textarea.style.height = 'auto'; // сброс высоты
-    textarea.style.height = textarea.scrollHeight + 'px';
+    textarea.style.minHeight = '40px';
+    const autoResize = () => {
+      textarea.style.height = 'auto'; // сброс
+      textarea.style.height = textarea.scrollHeight + 'px'; // подгонка под содержимое
     };
-    autoResize();
+    // Ставим высоту сразу (после вставки в DOM!)
+    setTimeout(autoResize, 0);
     textarea.addEventListener('input', autoResize);
 
     div.appendChild(questionText);
