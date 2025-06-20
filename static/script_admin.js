@@ -114,6 +114,12 @@ function createInput_question(i, j) {
   textarea.className = "question-input";
   textarea.dataset.index = i;
   textarea.style.overflow = 'hidden';
+    const autoResize = () => {
+    textarea.style.height = 'auto'; // сброс высоты
+    textarea.style.height = textarea.scrollHeight + 'px';
+  };
+  autoResize();
+  textarea.addEventListener('input', autoResize);
   return textarea;
 }
 function createInput_answer(i, j) {
@@ -122,6 +128,13 @@ function createInput_answer(i, j) {
   textarea.className = "answer-input";
   textarea.dataset.index = i;
   textarea.style.overflow = 'hidden';
+  const autoResize = () => {
+    textarea.style.height = 'auto'; // сброс высоты
+    textarea.style.height = textarea.scrollHeight + 'px';
+  };
+  autoResize();
+  textarea.addEventListener('input', autoResize);
+
   return textarea;
 }
 function addOption(text) {

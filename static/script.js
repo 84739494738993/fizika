@@ -29,6 +29,12 @@ function buildUI() {
     textarea.className = "answer-input";
     textarea.dataset.index = i;
     textarea.style.overflow = 'hidden';
+      const autoResize = () => {
+    textarea.style.height = 'auto'; // сброс высоты
+    textarea.style.height = textarea.scrollHeight + 'px';
+    };
+    autoResize();
+    textarea.addEventListener('input', autoResize);
 
     div.appendChild(questionText);
     div.appendChild(textarea);
