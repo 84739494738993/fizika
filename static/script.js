@@ -62,14 +62,38 @@ function buildUI() {
     const inputs = document.querySelectorAll(".answer-input");
     const userAnswers = Array.from(inputs).map(i => i.value.trim().toLowerCase());
     let mark = 0;
+    sum = 0;
+    let k = 0;
+    for (let j = 0; j < wich_test.length; j++) {
+        if (wich_test[j]===1){
+          k = j;
 
-    for (let i = 0; i < userAnswers.length; i++) {
-      if (userAnswers[i] === (Answers[i] || "").trim().toLowerCase()) {
-        mark++;
+    for (let i = 0; i < col_tasks[j]; i++) {
+      let user = fixKeyboardLayout((userAnswers[i] || "").toLowerCase().trim());
+      let machine = fixKeyboardLayout((Answers[i + sum] || "").toLowerCase().trim());
+      let distance = levenshtein(user, machine);
+      if ((userAnswers[i] || "").length > 5){
+        if (user === machine || distance<=1 ) {
+          mark++;
       }
-    }
+      else{
+        if (user === machine) {
+        mark++;
+        }
+      }
+      }
+      
+      console.log(user, machine,distance)
 
-    alert(`Правильных ответов: ${mark} из ${Answers.length}`);
+      
+    }
+    }
+    else{
+            sum+=col_tasks[j]
+          }
+  }
+
+    alert(`Правильных ответов: ${mark} из ${col_tasks[k]}`);
     // let mark_text = document.createElement('p');
     // mark_text.textContent = "Good your mark is: "+mark;
     // globalDiv.style.display = "none";
@@ -84,7 +108,37 @@ function buildUI() {
 
 
 
+function fixKeyboardLayout(str) {
+  const similarMap = {
+    'a': 'а', 'A': 'А', // латинская -> русская
+    'o': 'о', 'O': 'О',
+    'c': 'с', 'C': 'С',
+    'e': 'е', 'E': 'Е',
+    'p': 'р', 'P': 'Р',
+    'x': 'х', 'X': 'Х',
+    'y': 'у', 'Y': 'У',
+  };
 
+  return str.split('').map(char => similarMap[char] || char).join('');
+}
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,        // удаление
+        dp[i][j - 1] + 1,        // вставка
+        dp[i - 1][j - 1] + cost  // замена
+      );
+    }
+  }
+  return dp[m][n];
+}
 
 
 
