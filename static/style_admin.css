@@ -26,10 +26,10 @@ p{
 input{
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
-    width: 80%;
+    width: 50%;
     height: 40px;
     font-size: 3vh;
-    margin-bottom: 10px;
+    margin-top: 30px;
 }
 textarea {
   width: 80%; /* или фиксированная ширина */
@@ -40,8 +40,8 @@ textarea {
 
 button{
     width: 50%;
-    height: 70px;
-    font-size: 6vh;
+    height: 80px;
+    font-size: 3vh;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     padding: 10px;
     background-color: #4caf50;
