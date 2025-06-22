@@ -72,25 +72,21 @@ function buildUI() {
       let user = fixKeyboardLayout((userAnswers[i] || "").toLowerCase().trim());
       let machine = fixKeyboardLayout((Answers[i + sum] || "").toLowerCase().trim());
       let distance = levenshtein(user, machine);
+      console.log(user, machine,distance)
       if ((userAnswers[i] || "").length > 5){
         if (user === machine || distance<=1 ) {
           mark++;
       }
-      else{
-        if (user === machine) {
-        mark++;
-        }
-      }
-      }
-      
-      console.log(user, machine,distance)
-
-      
-    }
     }
     else{
-            sum+=col_tasks[j]
-          }
+      if (user === machine) {
+          mark++;
+      }
+    }
+
+    }
+    
+    }else{sum+=col_tasks[j]}
   }
 
     alert(`Правильных ответов: ${mark} из ${col_tasks[k]}`);
