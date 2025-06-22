@@ -92,31 +92,34 @@ function buildUI() {
   await updateQuestions(Name_Tasks);
   await updateAnswers(Answers);
   setTimeout(() => {
-  window.location.href = "/";
+  window.location.href = "admin";
 }, 3000);
+// rebuildUI();
 
 });
 
 
   button1.addEventListener("click", async () => {
-    Name_Tasks.push("");
-    Answers.push("");
-  //   for (let i = 0; i < wich_test.length; i++) {
-  //     if (wich_test[i]===true){
-  //       col_tasks[i] = col_tasks[i]+1
-  // }};
-    await updateQuestions(Name_Tasks);
-    await updateAnswers(Answers);
-    let k = 0;
-    for (let j = 0; j < wich_test.length; j++) {
-        if (wich_test[j]===2){k = j;}
-      }
-      col_tasks[k] = col_tasks[k]+1
-      await updateColTasks(col_tasks);
-    setTimeout(() => {
-  window.location.href = "/";
-}, 3000);
 
+    let k = 0;
+    let sum = 0;
+    for (let j = 0; j < wich_test.length; j++) {
+        if (wich_test[j]===2){k = j;
+
+      col_tasks[k] = col_tasks[k]+1
+      Name_Tasks.splice(sum+col_tasks[k]-1, 0, "");
+      Answers.splice(sum+col_tasks[k]-1, 0, "");
+    }
+      
+      else{sum += col_tasks[j]}
+    }
+      await updateColTasks(col_tasks);
+      await updateQuestions(Name_Tasks);
+      await updateAnswers(Answers);
+  setTimeout(() => {
+  window.location.href = "admin";
+}, 3000);
+// rebuildUI();
   });
 
   button2.addEventListener("click", async () => {
@@ -142,10 +145,10 @@ function buildUI() {
       }
       col_tasks[k] = col_tasks[k]-1
       await updateColTasks(col_tasks);
-      setTimeout(() => {
-  window.location.href = "/";
+  setTimeout(() => {
+  window.location.href = "admin";
 }, 3000);
-
+// rebuildUI();
     } else {
       alert("Выбирите вопрос какой хотите удалить!!!");
     }
@@ -183,10 +186,10 @@ function buildUI() {
       } 
       
       await updateWichTest(wich_test);
-      setTimeout(() => {
-      window.location.href = "/";
-    }, 3000);
-
+  setTimeout(() => {
+  window.location.href = "admin";
+}, 3000);
+// rebuildUI();
     });
     new_div.appendChild(new_button);
   }
@@ -203,6 +206,9 @@ function buildUI() {
     await updateWichTest(wich_test);
     await updateColTasks(col_tasks);
     await updateNameTests(name_tests);
+      setTimeout(() => {
+      window.location.href = "admin";
+    }, 3000);
   }else{alert("Введите имя теста изменить его будет нельзя")}  
  })
 }

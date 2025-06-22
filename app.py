@@ -142,5 +142,12 @@ def col_tasks():
     })
     return jsonify({"status": "ok"})
 
+@app.route("/admin")
+def admin_page():
+    user = request.cookies.get("user")
+    if user != "admin":
+        return "Доступ запрещён", 403
+    return send_file("index/index_admin.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
