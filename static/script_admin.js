@@ -174,6 +174,7 @@ function buildUI() {
       } 
       
       await updateWichTest(wich_test);
+      setTimeout(() => location.reload(), 3000);
     });
     new_div.appendChild(new_button);
   }
