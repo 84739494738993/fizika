@@ -91,7 +91,10 @@ function buildUI() {
 
   await updateQuestions(Name_Tasks);
   await updateAnswers(Answers);
-  setTimeout(() => location.reload(), 3000);
+  setTimeout(() => {
+  window.location.href = "/";
+}, 3000);
+
 });
 
 
@@ -110,7 +113,10 @@ function buildUI() {
       }
       col_tasks[k] = col_tasks[k]+1
       await updateColTasks(col_tasks);
-    setTimeout(() => location.reload(), 3000);
+    setTimeout(() => {
+  window.location.href = "/";
+}, 3000);
+
   });
 
   button2.addEventListener("click", async () => {
@@ -136,7 +142,10 @@ function buildUI() {
       }
       col_tasks[k] = col_tasks[k]-1
       await updateColTasks(col_tasks);
-      setTimeout(() => location.reload(), 3000);
+      setTimeout(() => {
+  window.location.href = "/";
+}, 3000);
+
     } else {
       alert("Выбирите вопрос какой хотите удалить!!!");
     }
@@ -174,7 +183,10 @@ function buildUI() {
       } 
       
       await updateWichTest(wich_test);
-      setTimeout(() => location.reload(), 3000);
+      setTimeout(() => {
+      window.location.href = "/";
+    }, 3000);
+
     });
     new_div.appendChild(new_button);
   }
