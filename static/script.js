@@ -5,6 +5,12 @@ let name_tests = [];
 let wich_test = [];
 let sum = 0;
 
+let button8 = document.getElementById('button8')
+
+button8.addEventListener("click", function () {
+  window.location.href = "/";
+});
+
 fetch("/data")
   .then(response => response.json())
   .then(data => {

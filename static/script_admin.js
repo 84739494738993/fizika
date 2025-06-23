@@ -5,6 +5,19 @@ let name_tests = [];
 let wich_test = [];
 let sum = 0;
 
+  let button = document.getElementById('button')
+  let button1 = document.getElementById('button1')
+  let button2 = document.getElementById('button2')
+  let button3 = document.getElementById('button3')
+  let button4 = document.getElementById('button4')
+  let button5 = document.getElementById('button5')
+  let button6 = document.getElementById('button6')
+  let button7 = document.getElementById('button7')
+  let button8 = document.getElementById('button8')
+  let input = document.getElementById('input')
+  let border_for_menu = document.getElementById('border_for_menu')
+  let select = document.getElementById('select')
+
 fetch("/data")
   .then(response => response.json())
   .then(data => {
@@ -19,8 +32,31 @@ fetch("/data")
   .catch(error => console.error("Ошибка при загрузке данных:", error));
 
   async function start_setings(){
+  let flag = false
   let len = wich_test.length;
     let old_index = 0;
+    for (let i = 0; i < len; i++) {
+      if (wich_test[i] === 3){
+          old_index = i
+          wich_test = [];
+      for (let i = 0; i < len; i++) {
+          wich_test.push(0);
+        }
+        wich_test[old_index] = 2;
+        flag = true
+
+      button4.style.display = "none";
+      button3.style.display = "none";
+      button6.style.display = "none";
+      button.style.display = "block";
+      button1.style.display = "block";
+      button7.style.display = "block";
+      button2.style.display = "block";
+      select.style.display = "block";
+      button5.style.display = "none"
+    }
+  }
+  if (flag === false){
     for (let i = 0; i < len; i++) {
        if (wich_test[i] === 1){
           old_index = i
@@ -31,11 +67,11 @@ fetch("/data")
       wich_test.push(0);
   }
   wich_test[old_index] = 1;
+  }
   await updateWichTest(wich_test);
 }
 
-function buildUI() {
-  
+function buildUI() {  
   let global_div = createGlobalDiv();
     sum = 0;
     for (let j = 0; j < wich_test.length; j++) {
@@ -56,19 +92,11 @@ function buildUI() {
           sum+=col_tasks[j]
         }
       // console.log(sum,sum+col_tasks[j])
+
   }
 
 
-  let button = document.getElementById('button')
-  let button1 = document.getElementById('button1')
-  let button2 = document.getElementById('button2')
-  let button3 = document.getElementById('button3')
-  let button4 = document.getElementById('button4')
-  let button5 = document.getElementById('button5')
-  let button6 = document.getElementById('button6')
-  let input = document.getElementById('input')
-  let border_for_menu = document.getElementById('border_for_menu')
-  let select = document.getElementById('select')
+
 
   global_div.appendChild(button4);
   global_div.appendChild(button1);
@@ -80,10 +108,10 @@ function buildUI() {
   global_div.appendChild(button3);
   global_div.appendChild(button5);
   global_div.appendChild(border_for_menu)
+  global_div.appendChild(button7)
   border_for_menu.appendChild(button6)
   border_for_menu.appendChild(input)
   border_for_menu.appendChild(button3)
-
   document.getElementById("all").appendChild(global_div);
 
 
@@ -91,6 +119,12 @@ button6.addEventListener("click", function () {
   // button4.style.display = button4.style.display === "none" ? "block" : "none";
   input.style.display = input.style.display === "block" ? "none" : "block";
   button3.style.display = button3.style.display === "block" ? "none" : "block";
+});
+button7.addEventListener("click", function () {
+  window.location.href = "admin";
+});
+button8.addEventListener("click", function () {
+  window.location.href = "/";
 });
   // Заполняем селект
   sum = 0;
@@ -110,6 +144,7 @@ button6.addEventListener("click", function () {
   let sum = 0;
   for (let j = 0; j < wich_test.length; j++) {
     if (wich_test[j] === 2) {
+      wich_test[j] = 3
       const answerInputs = document.querySelectorAll(".answer-input");
       const questionInputs = document.querySelectorAll(".question-input");
 
@@ -128,10 +163,11 @@ button6.addEventListener("click", function () {
       await updateColTasks(col_tasks);
       await updateNameTests(name_tests);
       await updateWichTest(wich_test);
+      await updateAnswers(Answers);
   setTimeout(() => {
-  window.location.href = "/";
+  window.location.href = "admin";
 }, 3000);
-// rebuildUI();
+  buildUI();
 
 });
 
@@ -160,6 +196,7 @@ function save(){
     let sum = 0;
     for (let j = 0; j < wich_test.length; j++) {
         if (wich_test[j]===2){k = j;
+          wich_test[k] = 3
 
       col_tasks[k] = col_tasks[k]+1
       Name_Tasks.splice(sum+col_tasks[k]-1, 0, "");
@@ -175,8 +212,8 @@ function save(){
       await updateAnswers(Answers)
   setTimeout(() => {
   window.location.href = "admin";
-}, 3000);
-// rebuildUI();
+}, 1000);
+  // buildUI();
   });
 
   button2.addEventListener("click", async () => {
@@ -189,11 +226,6 @@ function save(){
     if (wich_test[r] === 2) {
       Name_Tasks.splice(index-1+sum, 1);
       Answers.splice(index-1+sum, 1);
-      await updateQuestions(Name_Tasks);
-      await updateColTasks(col_tasks);
-      await updateNameTests(name_tests);
-      await updateWichTest(wich_test);
-      await updateAnswers(Answers)
       }
        else {
         sum += col_tasks[r];
@@ -201,15 +233,21 @@ function save(){
     }
       let k = 0;
     for (let j = 0; j < wich_test.length; j++) {
-        if (wich_test[j]===2){k = j;break}
+        if (wich_test[j]===2){k = j;wich_test[k] = 3;break}
+
       }
       col_tasks[k] = col_tasks[k]-1
       await updateColTasks(col_tasks);
+      await updateQuestions(Name_Tasks);
+      await updateColTasks(col_tasks);
+      await updateNameTests(name_tests);
+      await updateWichTest(wich_test);
+      await updateAnswers(Answers)
   setTimeout(() => {
   window.location.href = "admin";
-}, 3000);
-// rebuildUI();
-    } else {
+}, 1000);
+// buildUI();
+   } else {
       alert("Выбирите вопрос какой хотите удалить!!!");
     }
   });
@@ -234,7 +272,7 @@ function save(){
       let len = wich_test.length;
       let old_index = 0;
       for (let i = 0; i < len; i++) {
-         if (wich_test[i] === 2){
+         if (wich_test[i] === 1){
             old_index = i
       }
       
@@ -249,6 +287,7 @@ function save(){
       if(new_select.selectedIndex === 2){
         wich_test[old_index] = 1
         wich_test[index] = 2
+        console.log(index,old_index)
       } 
 
       await updateQuestions(Name_Tasks);
@@ -267,11 +306,14 @@ function save(){
       new_select.style.display = "none";
       button.style.display = "block";
       button1.style.display = "block";
+      button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
       button5.style.display = "block"
-  setTimeout(() => {}, 2000);
-    buildUI();
+  setTimeout(() => {
+    // window.location.href = "admin";
+}, 1000);
+buildUI();
     });
     new_div.appendChild(new_button);
   }
@@ -298,14 +340,17 @@ function save(){
       button3.style.display = "none";
       button.style.display = "block";
       button1.style.display = "block";
+      button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
       button5.style.display = "block";
       input.style.display = "none";
       
       
-      setTimeout(() => { }, 3000);
-    buildUI()
+      setTimeout(() => {
+  // window.location.href = "admin";
+}, 1000);
+buildUI();
   }else{alert("Введите имя теста изменить его будет нельзя")}  
  })
 }
