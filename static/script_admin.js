@@ -54,6 +54,7 @@ fetch("/data")
       button2.style.display = "block";
       select.style.display = "block";
       button5.style.display = "none"
+      button8.style.display = "block"
     }
   }
   if (flag === false){
@@ -281,10 +282,10 @@ function save(){
       for (let i = 0; i < len; i++) {
         wich_test.push(0);
     }
-    if (new_select.selectedIndex === 1){
+    if (new_select.selectedIndex === 0){
         wich_test[index] = 1
       }
-      if(new_select.selectedIndex === 2){
+      if(new_select.selectedIndex === 1){
         wich_test[old_index] = 1
         wich_test[index] = 2
         console.log(index,old_index)
@@ -295,7 +296,7 @@ function save(){
       await updateNameTests(name_tests);
       await updateWichTest(wich_test);
       await updateAnswers(Answers)
-      if (new_select.selectedIndex === 1){
+      if (new_select.selectedIndex === 0){
         window.location.href = "admin";
       }
       global_div.style.display = "block";
@@ -309,7 +310,7 @@ function save(){
       button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
-      button5.style.display = "block"
+      button5.style.display = "none"
   setTimeout(() => {
     // window.location.href = "admin";
 }, 1000);
@@ -343,7 +344,7 @@ buildUI();
       button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
-      button5.style.display = "block";
+      button5.style.display = "none";
       input.style.display = "none";
       
       
@@ -427,6 +428,7 @@ function createInput_question(i, j) {
   textarea.value = j;
   textarea.className = "question-input";
   textarea.dataset.index = i;
+  textarea.placeholder = "Введите вопрос"
   textarea.style.overflow = 'hidden';
   textarea.style.minHeight = '40px';
   const autoResize = () => {
@@ -444,6 +446,7 @@ function createInput_answer(i, j) {
   textarea.className = "answer-input";
   textarea.dataset.index = i;
   textarea.style.overflow = 'hidden';
+  textarea.placeholder = "Введите ответ"
   textarea.style.minHeight = '40px';
   const autoResize = () => {
     textarea.style.height = 'auto'; // сброс
