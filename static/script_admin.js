@@ -17,6 +17,8 @@ let sum = 0;
   let input = document.getElementById('input')
   let border_for_menu = document.getElementById('border_for_menu')
   let select = document.getElementById('select')
+  let button9 = document.getElementById('button9')
+  let select3 = document.getElementById('select3')
 
 fetch("/data")
   .then(response => response.json())
@@ -47,6 +49,7 @@ fetch("/data")
 
       button4.style.display = "none";
       button3.style.display = "none";
+      button9.style.display = "none";
       button6.style.display = "none";
       button.style.display = "block";
       button1.style.display = "block";
@@ -54,6 +57,7 @@ fetch("/data")
       button2.style.display = "block";
       select.style.display = "block";
       button5.style.display = "none"
+      select3.style.display = "none";
       button8.style.display = "block"
     }
   }
@@ -110,6 +114,8 @@ function buildUI() {
   global_div.appendChild(button5);
   global_div.appendChild(border_for_menu)
   global_div.appendChild(button7)
+  global_div.appendChild(select3)
+  global_div.appendChild(button9)
   border_for_menu.appendChild(button6)
   border_for_menu.appendChild(input)
   border_for_menu.appendChild(button3)
@@ -303,6 +309,7 @@ function save(){
       new_div.style.display = "none"
       button4.style.display = "none";
       button3.style.display = "none";
+      button9.style.display = "none";
       button6.style.display = "none";
       new_select.style.display = "none";
       button.style.display = "block";
@@ -310,7 +317,8 @@ function save(){
       button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
-      button5.style.display = "none"
+      button5.style.display = "none";
+      select3.style.display = "none";
   setTimeout(() => {
     // window.location.href = "admin";
 }, 1000);
@@ -339,6 +347,8 @@ buildUI();
       global_div.style.display = "block";
       button4.style.display = "none";
       button3.style.display = "none";
+      button9.style.display = "none";
+      button6.style.display = "none";
       button.style.display = "block";
       button1.style.display = "block";
       button7.style.display = "block";
@@ -346,6 +356,7 @@ buildUI();
       select.style.display = "block";
       button5.style.display = "none";
       input.style.display = "none";
+      select3.style.display = "none";
       
       
       setTimeout(() => {
@@ -354,8 +365,36 @@ buildUI();
 buildUI();
   }else{alert("Введите имя теста изменить его будет нельзя")}  
  })
-}
 
+   for (let i = 0; i < name_tests.length; i++) {
+    addOption3(name_tests[i])
+  }
+
+button9.addEventListener("click",async () => {
+  let wybor = select3.selectedIndex
+  let summa = col_tasks[wybor-1]
+  console.log(summa,wybor,'2,1')
+  if (wybor != ""){
+    name_tests.splice(wybor-1, 1);
+    col_tasks.splice(wybor-1, 1);
+    wich_test.splice(wybor-1, 1);
+    Name_Tasks.splice(wybor-1, summa);
+    Answers.splice(wybor-1, summa);
+
+      await updateQuestions(Name_Tasks);
+      await updateColTasks(col_tasks);
+      await updateNameTests(name_tests);
+      await updateWichTest(wich_test);
+      await updateAnswers(Answers);     
+      
+  setTimeout(() => {
+  window.location.href = "admin";
+}, 1000);
+buildUI();
+  }else{alert("Сначала выберите тест которий хотите удалить")}  
+ })
+
+}
 
 async function updateQuestions(questions) {
   const res = await fetch("/update_questions", {
@@ -463,6 +502,13 @@ function addOption(text) {
   option.text = text;
   option.value = text.toLowerCase();
   select.appendChild(option);
+}
+function addOption3(text) {
+  const select3 = document.getElementById("select3");
+  const option3 = document.createElement("option");
+  option3.text = text;
+  option3.value = text.toLowerCase();
+  select3.appendChild(option3);
 }
 function createButton(text) {
   const button = document.createElement("button");
