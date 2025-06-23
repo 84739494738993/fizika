@@ -63,3 +63,6 @@ select{
     background-color: #4caf50;
     color: white;
 }
+#border_for_menu{
+    border: solid 2px;color: black ;
+}
