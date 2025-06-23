@@ -49,6 +49,7 @@ button{
 button:hover{
     background-color: rgb(70, 132, 72);
 }
+
 textarea {
   width: 80%; /* или фиксированная ширина */
   height: 50%;
