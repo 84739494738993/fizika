@@ -19,6 +19,9 @@ let sum = 0;
   let select = document.getElementById('select')
   let button9 = document.getElementById('button9')
   let select3 = document.getElementById('select3')
+  let input10 = document.getElementById('input10')
+  let button10 = document.getElementById('button10')
+  let button11 = document.getElementById('button11')
 
 fetch("/data")
   .then(response => response.json())
@@ -56,9 +59,12 @@ fetch("/data")
       button7.style.display = "block";
       button2.style.display = "block";
       select.style.display = "block";
-      button5.style.display = "none"
+      button5.style.display = "none";
       select3.style.display = "none";
-      button8.style.display = "block"
+      button8.style.display = "block";
+      button10.style.display = "none";
+      input10.style.display = "none";
+      button11.style.display = "none";
     }
   }
   if (flag === false){
@@ -114,8 +120,11 @@ function buildUI() {
   global_div.appendChild(button5);
   global_div.appendChild(border_for_menu)
   global_div.appendChild(button7)
+  global_div.appendChild(button11);
   global_div.appendChild(select3)
   global_div.appendChild(button9)
+  global_div.appendChild(input10);
+  global_div.appendChild(button10);
   border_for_menu.appendChild(button6)
   border_for_menu.appendChild(input)
   border_for_menu.appendChild(button3)
@@ -133,6 +142,17 @@ button7.addEventListener("click", function () {
 button8.addEventListener("click", function () {
   window.location.href = "/";
 });
+if(name_tests.length>0){
+  button11.addEventListener("click", function () {
+    select3.style.display = select3.style.display === "block" ? "none" : "block";
+    input10.style.display = input10.style.display === "block" ? "none" : "block";
+    button10.style.display = button10.style.display === "block" ? "none" : "block";
+    button9.style.display = button9.style.display === "block" ? "none" : "block";
+    });
+}
+else{
+  button11.style.display = "none"
+}
   // Заполняем селект
   sum = 0;
   for (let j = 0; j < wich_test.length; j++) {
@@ -319,6 +339,9 @@ function save(){
       select.style.display = "block";
       button5.style.display = "none";
       select3.style.display = "none";
+      button10.style.display = "none";
+      input10.style.display = "none";
+      button11.style.display = "none";
   setTimeout(() => {
     // window.location.href = "admin";
 }, 1000);
@@ -357,6 +380,9 @@ buildUI();
       button5.style.display = "none";
       input.style.display = "none";
       select3.style.display = "none";
+      button10.style.display = "none";
+      input10.style.display = "none";
+      button11.style.display = "none";
       
       
       setTimeout(() => {
@@ -370,16 +396,36 @@ buildUI();
     addOption3(name_tests[i])
   }
 
+  button10.addEventListener("click",async () => {
+    let wybor = select3.selectedIndex;
+    if (wybor != ""){
+    if (input10.value != ""){
+    name_tests[wybor-1] = input10.value;
+    await updateNameTests(name_tests);
+    setTimeout(() => {
+  window.location.href = "admin";
+}, 1000);
+}
+else{alert("Теперь введите новое имя теста")}
+}else{alert("Сначала выберите тест которий хотите удалить/изменить")}
+  });
+
 button9.addEventListener("click",async () => {
   let wybor = select3.selectedIndex
   let summa = col_tasks[wybor-1]
-  console.log(summa,wybor,'2,1')
+  let sum = 0;
+  let k = 0;
+  for (let j = 0; j < wybor-1; j++) {
+      sum += col_tasks[j];
+  }
+  // console.log(summa,wybor,sum)
+  
   if (wybor != ""){
     name_tests.splice(wybor-1, 1);
     col_tasks.splice(wybor-1, 1);
     wich_test.splice(wybor-1, 1);
-    Name_Tasks.splice(wybor-1, summa);
-    Answers.splice(wybor-1, summa);
+    Name_Tasks.splice(sum, summa);
+    Answers.splice(sum, summa);
 
       await updateQuestions(Name_Tasks);
       await updateColTasks(col_tasks);
@@ -391,7 +437,7 @@ button9.addEventListener("click",async () => {
   window.location.href = "admin";
 }, 1000);
 buildUI();
-  }else{alert("Сначала выберите тест которий хотите удалить")}  
+  }else{alert("Сначала выберите тест которий хотите удалить/изменить")}  
  })
 
 }
