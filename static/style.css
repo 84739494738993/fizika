@@ -67,3 +67,30 @@ textarea {
     background-color: #4caf50;
     color: white;
 }
+.question-container {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.options-container {
+  margin: 10px 0;
+  display: flex;
+  
+}
+
+.option {
+  margin: 5px 0;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.option input {
+  margin-right: 10px;
+}
+
+.option label {
+  cursor: pointer;
+}

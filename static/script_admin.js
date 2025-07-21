@@ -167,81 +167,72 @@ else{
   }
 
   // Навешиваем обработчики
-  button.addEventListener("click", async () => {
+ // В функции сохранения (button click handler) замените сбор ответов:
+button.addEventListener("click", async () => {
   let sum = 0;
   for (let j = 0; j < wich_test.length; j++) {
     if (wich_test[j] === 2) {
-      wich_test[j] = 3
-      const answerInputs = document.querySelectorAll(".answer-input");
+      wich_test[j] = 3;
       const questionInputs = document.querySelectorAll(".question-input");
-
+      
       for (let i = 0; i < col_tasks[j]; i++) {
-        // console.log(Answers[i + sum],Name_Tasks[i + sum],answerInputs[i].value,questionInputs[i].value)
-        Answers[i + sum] = answerInputs[i].value;
         Name_Tasks[i + sum] = questionInputs[i].value;
+        Answers[i + sum] = collectAnswerData(i);
       }
     } else {
       sum += col_tasks[j];
     }
   }
-
-      await updateColTasks(col_tasks);
-      await updateQuestions(Name_Tasks);
-      await updateColTasks(col_tasks);
-      await updateNameTests(name_tests);
-      await updateWichTest(wich_test);
-      await updateAnswers(Answers);
+  
+  // Остальной код сохранения остается без изменений
+  await updateColTasks(col_tasks);
+  await updateQuestions(Name_Tasks);
+  await updateNameTests(name_tests);
+  await updateWichTest(wich_test);
+  await updateAnswers(Answers);
   setTimeout(() => {
-  window.location.href = "admin";
-}, 3000);
-  buildUI();
-
+    window.location.href = "admin";
+  }, 3000);
 });
 
-function save(){
-   let sum = 0;
+button1.addEventListener("click", async () => {
+  // Сначала сохраняем текущие данные
+  let sum = 0;
   for (let j = 0; j < wich_test.length; j++) {
     if (wich_test[j] === 2) {
-      const answerInputs = document.querySelectorAll(".answer-input");
       const questionInputs = document.querySelectorAll(".question-input");
-
+      
       for (let i = 0; i < col_tasks[j]; i++) {
-        // console.log(Answers[i + sum],Name_Tasks[i + sum],answerInputs[i].value,questionInputs[i].value)
-        Answers[i + sum] = answerInputs[i].value;
         Name_Tasks[i + sum] = questionInputs[i].value;
+        Answers[i + sum] = collectAnswerData(i);
       }
+      
+      // Затем добавляем новый вопрос
+      let k = j;
+      wich_test[k] = 3;
+      col_tasks[k] = col_tasks[k] + 1;
+      Name_Tasks.splice(sum + col_tasks[k] - 1, 0, "");
+      Answers.splice(sum + col_tasks[k] - 1, 0, JSON.stringify({
+        text: "",
+        options: { a: "", b: "", c: "", d: "" },
+        correct: "a",
+        type: "options" // По умолчанию новый вопрос будет с вариантами
+      }));
     } else {
       sum += col_tasks[j];
     }
   }
-}
-
-
-  button1.addEventListener("click", async () => {
-    save()
-    let k = 0;
-    let sum = 0;
-    for (let j = 0; j < wich_test.length; j++) {
-        if (wich_test[j]===2){k = j;
-          wich_test[k] = 3
-
-      col_tasks[k] = col_tasks[k]+1
-      Name_Tasks.splice(sum+col_tasks[k]-1, 0, "");
-      Answers.splice(sum+col_tasks[k]-1, 0, "");
-    }
-      
-      else{sum += col_tasks[j]}
-    }
-      await updateQuestions(Name_Tasks);
-      await updateColTasks(col_tasks);
-      await updateNameTests(name_tests);
-      await updateWichTest(wich_test);
-      await updateAnswers(Answers)
+  
+  await updateQuestions(Name_Tasks);
+  await updateColTasks(col_tasks);
+  await updateNameTests(name_tests);
+  await updateWichTest(wich_test);
+  await updateAnswers(Answers);
+  
   setTimeout(() => {
-  window.location.href = "admin";
-}, 1000);
-  // buildUI();
-  });
+    window.location.href = "admin";
+  }, 1000);
+});
 
   button2.addEventListener("click", async () => {
     const select = document.getElementById("select");
@@ -525,23 +516,173 @@ function createInput_question(i, j) {
   textarea.addEventListener('input', autoResize);
   return textarea;
 }
+// Замените функцию createInput_answer на эту:
 function createInput_answer(i, j) {
-  let textarea = document.createElement('textarea');
-  textarea.value = j;
-  textarea.className = "answer-input";
-  textarea.dataset.index = i;
-  textarea.style.overflow = 'hidden';
-  textarea.placeholder = "Введите ответ"
-  textarea.style.minHeight = '40px';
+  let container = document.createElement('div');
+  container.className = "answer-container";
+  container.dataset.index = i;
+  
+  // Парсим существующий ответ или создаем новый формат
+  let answerData = {};
+  try {
+    answerData = j ? JSON.parse(j) : null;
+  } catch (e) {
+    answerData = null;
+  }
+
+  if (!answerData || typeof answerData !== 'object') {
+    answerData = {
+      text: j || "",
+      options: { a: "", b: "", c: "", d: "" },
+      correct: "a",
+      type: j ? "text" : "options" // Добавляем тип вопроса
+    };
+  } else {
+    if (!answerData.options || typeof answerData.options !== 'object') {
+      answerData.options = { a: "", b: "", c: "", d: "" };
+    }
+    if (!answerData.correct) {
+      answerData.correct = "a";
+    }
+    if (!answerData.type) {
+      answerData.type = answerData.text && !Object.values(answerData.options).some(v => v) ? "text" : "options";
+    }
+  }
+
+  // Добавляем переключатель типа вопроса
+  let typeSelector = document.createElement('div');
+  typeSelector.style.marginBottom = '10px';
+  typeSelector.style.display = 'flex';
+  typeSelector.style.gap = '10px';
+  
+  let optionsLabel = document.createElement('label');
+  let optionsRadio = document.createElement('input');
+  optionsRadio.type = 'radio';
+  optionsRadio.name = `question-type-${i}`;
+  optionsRadio.value = 'options';
+  optionsRadio.checked = answerData.type === 'options';
+  optionsLabel.appendChild(optionsRadio);
+  optionsLabel.appendChild(document.createTextNode('Варианты ответов'));
+  
+  let textLabel = document.createElement('label');
+  let textRadio = document.createElement('input');
+  textRadio.type = 'radio';
+  textRadio.name = `question-type-${i}`;
+  textRadio.value = 'text';
+  textRadio.checked = answerData.type === 'text';
+  textLabel.appendChild(textRadio);
+  textLabel.appendChild(document.createTextNode('Текстовый ответ'));
+  
+  typeSelector.appendChild(optionsLabel);
+  typeSelector.appendChild(textLabel);
+  container.appendChild(typeSelector);
+
+  // Поле для текста ответа (если нужен)
+  let answerText = document.createElement('textarea');
+  answerText.value = answerData.text || "";
+  answerText.className = "answer-text-input";
+  answerText.placeholder = "Текст ответа";
+  answerText.style.overflow = 'hidden';
+  answerText.style.minHeight = '40px';
+  answerText.style.width = '100%';
+  answerText.style.marginBottom = '10px';
+  answerText.style.display = answerData.type === 'text' ? 'block' : 'none';
+  
   const autoResize = () => {
-    textarea.style.height = 'auto'; // сброс
-    textarea.style.height = textarea.scrollHeight + 'px'; // подгонка под содержимое
+    answerText.style.height = 'auto';
+    answerText.style.height = answerText.scrollHeight + 'px';
   };
-  // Ставим высоту сразу (после вставки в DOM!)
+  
   setTimeout(autoResize, 0);
-  textarea.addEventListener('input', autoResize);
-  return textarea;
+  answerText.addEventListener('input', autoResize);
+  container.appendChild(answerText);
+
+  // Контейнер для вариантов ответов
+  let optionsContainer = document.createElement('div');
+  optionsContainer.className = "options-container";
+  optionsContainer.style.display = answerData.type === 'options' ? 'block' : 'none';
+  
+  // Варианты ответов a, b, c, d
+  ['a', 'b', 'c', 'd'].forEach(option => {
+    let optionDiv = document.createElement('div');
+    optionDiv.style.display = 'flex';
+    optionDiv.style.alignItems = 'center';
+    optionDiv.style.marginBottom = '5px';
+    
+    let radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `correct-answer-${i}`;
+    radio.value = option;
+    radio.checked = answerData.correct === option;
+    radio.style.marginRight = '10px';
+    radio.style.display = answerData.type === 'options' ? 'block' : 'none';
+    
+    let label = document.createElement('span');
+    label.textContent = `${option.toUpperCase()}: `;
+    label.style.marginRight = '5px';
+    label.style.minWidth = '30px';
+    
+    let input = document.createElement('input');
+    input.type = 'text';
+    input.value = answerData.options[option] || "";
+    input.className = "answer-option-input";
+    input.dataset.option = option;
+    input.style.flex = '1';
+    input.placeholder = `Вариант ${option.toUpperCase()}`;
+    input.style.display = answerData.type === 'options' ? 'block' : 'none';
+    
+    optionDiv.appendChild(radio);
+    optionDiv.appendChild(label);
+    optionDiv.appendChild(input);
+    optionsContainer.appendChild(optionDiv);
+  });
+  
+  container.appendChild(optionsContainer);
+
+  // Обработчик изменения типа вопроса
+  typeSelector.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const type = this.value;
+      answerText.style.display = type === 'text' ? 'block' : 'none';
+      optionsContainer.style.display = type === 'options' ? 'block' : 'none';
+      optionsContainer.querySelectorAll('input[type="radio"], input[type="text"]').forEach(input => {
+        input.style.display = type === 'options' ? 'block' : 'none';
+      });
+    });
+  });
+
+  return container;
 }
+
+function collectAnswerData(index) {
+  const container = document.querySelector(`.answer-container[data-index="${index}"]`);
+  const type = container.querySelector('input[name^="question-type"]:checked').value;
+  const textInput = container.querySelector('.answer-text-input');
+  
+  let answerData = {
+    type: type,
+    text: "",
+    options: {},
+    correct: "a"
+  };
+
+  if (type === "text") {
+    answerData.text = textInput.value;
+  } else {
+    const optionInputs = container.querySelectorAll('.answer-option-input');
+    const correctRadio = container.querySelector('input[type="radio"]:checked');
+    
+    answerData.correct = correctRadio ? correctRadio.value : "a";
+    
+    optionInputs.forEach(input => {
+      answerData.options[input.dataset.option] = input.value;
+    });
+  }
+  
+  return JSON.stringify(answerData);
+}
+
+
 function addOption(text) {
   const select = document.getElementById("select");
   const option = document.createElement("option");
