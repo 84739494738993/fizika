@@ -184,15 +184,20 @@ button.addEventListener("click", async () => {
     }
   }
   
-  // Остальной код сохранения остается без изменений
-  await updateColTasks(col_tasks);
-  await updateQuestions(Name_Tasks);
-  await updateNameTests(name_tests);
-  await updateWichTest(wich_test);
-  await updateAnswers(Answers);
-  setTimeout(() => {
+  try {
+    await Promise.all([
+      updateColTasks(col_tasks),
+      updateQuestions(Name_Tasks),
+      updateNameTests(name_tests),
+      updateWichTest(wich_test),
+      updateAnswers(Answers)
+    ]);
+    
     window.location.href = "admin";
-  }, 3000);
+  } catch (error) {
+    console.error("Ошибка сохранения:", error);
+    alert("Произошла ошибка при сохранении. Проверьте консоль для подробностей.");
+  }
 });
 
 button1.addEventListener("click", async () => {
@@ -474,14 +479,34 @@ async function updateColTasks(col_tasks) {
 }
 
 async function updateAnswers(answers) {
-  const res = await fetch("/update_answers", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ answers }),
-  });
-  const data = await res.json();
-  if (data.status !== "ok") console.error("Ошибка обновления ответов");
+  try {
+    const res = await fetch("/update_answers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ошибка: ${res.status}`);
+    }
+
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error("Ответ не в формате JSON");
+    }
+
+    const data = await res.json();
+
+    if (!data.status || data.status !== "ok") {
+      throw new Error("Ответ не содержит status: ok");
+    }
+
+    console.log("Ответ успешно обновлен");
+  } catch (e) {
+    console.error("Ошибка при обновлении ответов:", e);
+  }
 }
+
 
 function createGlobalDiv() {
   let globalDiv = document.createElement('div');
@@ -656,30 +681,30 @@ function createInput_answer(i, j) {
 
 function collectAnswerData(index) {
   const container = document.querySelector(`.answer-container[data-index="${index}"]`);
-  const type = container.querySelector('input[name^="question-type"]:checked').value;
-  const textInput = container.querySelector('.answer-text-input');
-  
-  let answerData = {
-    type: type,
-    text: "",
-    options: {},
-    correct: "a"
-  };
+  if (!container) return JSON.stringify({ text: "", options: {}, correct: "a", type: "options" });
 
-  if (type === "text") {
-    answerData.text = textInput.value;
-  } else {
-    const optionInputs = container.querySelectorAll('.answer-option-input');
-    const correctRadio = container.querySelector('input[type="radio"]:checked');
-    
-    answerData.correct = correctRadio ? correctRadio.value : "a";
-    
-    optionInputs.forEach(input => {
-      answerData.options[input.dataset.option] = input.value;
-    });
-  }
-  
-  return JSON.stringify(answerData);
+  const type = container.querySelector('input[name^="question-type"]:checked')?.value || "options";
+  const answerText = container.querySelector('.answer-text-input')?.value || '';
+
+  const options = {};
+  let correct = "a"; // значение по умолчанию
+
+  // Собираем варианты ответов
+  ['a', 'b', 'c', 'd'].forEach(letter => {
+    const input = container.querySelector(`.answer-option-input[data-option="${letter}"]`);
+    if (input) options[letter] = input.value || "";
+  });
+
+  // Находим выбранный правильный ответ
+  const correctRadio = container.querySelector('input[type="radio"][name^="correct-answer"]:checked');
+  if (correctRadio) correct = correctRadio.value;
+
+  return JSON.stringify({
+    type: type,
+    text: answerText,
+    options: options,
+    correct: correct
+  });
 }
 
 

@@ -23,7 +23,47 @@ fetch("/data")
   })
   .catch(error => console.error("Ошибка при загрузке данных:", error));
 
-function buildUI() {
+function showQuestionSelector() {
+  const allDiv = document.getElementById("all");
+  allDiv.innerHTML = '';
+
+  const selectorContainer = document.createElement("div");
+  selectorContainer.className = "selector-container";
+
+  sum = 0;
+  let testIndex = wich_test.findIndex(w => w === 1);
+  if (testIndex === -1) {
+    allDiv.innerHTML = "<p>Нет активных тестов</p>";
+    return;
+  }
+
+  for (let i = 0; i < col_tasks[testIndex]; i++) {
+    const label = document.createElement("label");
+    label.style.display = "block";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = i;
+    checkbox.checked = true;
+
+    label.appendChild(checkbox);
+    label.append(` ${i + 1}. ${Name_Tasks[i + sum]}`);
+    selectorContainer.appendChild(label);
+  }
+
+  const startButton = document.createElement("button");
+  startButton.textContent = "Начать тест";
+  startButton.addEventListener("click", () => {
+    const checkboxes = selectorContainer.querySelectorAll("input[type='checkbox']:checked");
+    const selectedIndexes = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    buildUI(selectedIndexes);
+  });
+
+  allDiv.appendChild(selectorContainer);
+  allDiv.appendChild(startButton);
+}
+
+function buildUI(selectedIndexes) {
   const allDiv = document.getElementById("all");
   allDiv.innerHTML = ''; // Очищаем контейнер
   
@@ -36,12 +76,21 @@ function buildUI() {
   for (let j = 0; j < wich_test.length; j++) {
     if (wich_test[j] === 1) {
       testFound = true;
+      let questionCount = 0;
+      
       for(let i = 0; i < col_tasks[j]; i++) {
+        // Пропускаем вопросы, которые не выбраны
+        if (selectedIndexes && !selectedIndexes.includes(i)) {
+          continue;
+        }
+        
+        questionCount++;
         const div = document.createElement("div");
         div.className = "question-container";
+        div.dataset.questionIndex = i + sum; // Сохраняем глобальный индекс вопроса
 
         const questionText = document.createElement("p");
-        questionText.textContent = `${i+1}. ${Name_Tasks[i+sum]}`;
+        questionText.textContent = `${questionCount}. ${Name_Tasks[i+sum]}`;
         div.appendChild(questionText);
 
         // Обработка ответов (новый и старый формат)
@@ -60,12 +109,12 @@ function buildUI() {
                 
                 const radio = document.createElement("input");
                 radio.type = "radio";
-                radio.name = `question-${i}`;
+                radio.name = `question-${i+sum}`; // Используем глобальный индекс
                 radio.value = key;
-                radio.id = `question-${i}-${key}`;
+                radio.id = `question-${i+sum}-${key}`;
                 
                 const label = document.createElement("label");
-                label.htmlFor = `question-${i}-${key}`;
+                label.htmlFor = `question-${i+sum}-${key}`;
                 label.textContent = `${key.toUpperCase()}. ${value}`;
                 
                 optionDiv.appendChild(radio);
@@ -80,7 +129,7 @@ function buildUI() {
             const textarea = document.createElement('textarea');
             textarea.placeholder = "Write Answer";
             textarea.className = "answer-input";
-            textarea.dataset.index = i;
+            textarea.dataset.index = i + sum; // Используем глобальный индекс
             textarea.style.overflow = 'hidden';
             textarea.style.minHeight = '40px';
             
@@ -98,7 +147,7 @@ function buildUI() {
           const textarea = document.createElement('textarea');
           textarea.placeholder = "Write Answer";
           textarea.className = "answer-input";
-          textarea.dataset.index = i;
+          textarea.dataset.index = i + sum; // Используем глобальный индекс
           textarea.style.overflow = 'hidden';
           textarea.style.minHeight = '40px';
           
@@ -137,56 +186,59 @@ function buildUI() {
 
 function checkAnswers() {
   let mark = 0;
-  sum = 0;
-  let k = 0;
+  let totalQuestions = 0;
+  let currentTestIndex = -1;
   
+  // Находим активный тест
   for (let j = 0; j < wich_test.length; j++) {
     if (wich_test[j] === 1) {
-      k = j;
-      
-      for (let i = 0; i < col_tasks[j]; i++) {
-        try {
-          const answerData = JSON.parse(Answers[i + sum]);
-          
-          if (answerData.type === "options") {
-            // Проверка выбранного варианта
-            const selectedOption = document.querySelector(`input[name="question-${i}"]:checked`);
-            if (selectedOption && selectedOption.value === answerData.correct) {
-              mark++;
-            }
-          } else {
-            // Проверка текстового ответа
-            const userAnswer = document.querySelector(`.answer-input[data-index="${i}"]`)?.value.trim().toLowerCase() || "";
-            let user = fixKeyboardLayout(userAnswer);
-            let machine = fixKeyboardLayout((answerData.text || "").toLowerCase().trim());
-            let distance = levenshtein(user, machine);
-            
-            if (userAnswer.length > 5) {
-              if (user === machine || distance <= 1) mark++;
-            } else {
-              if (user === machine) mark++;
-            }
-          }
-        } catch (e) {
-          // Старый формат ответа (текстовый)
-          const userAnswer = document.querySelector(`.answer-input[data-index="${i}"]`)?.value.trim().toLowerCase() || "";
-          let user = fixKeyboardLayout(userAnswer);
-          let machine = fixKeyboardLayout((Answers[i + sum] || "").toLowerCase().trim());
-          let distance = levenshtein(user, machine);
-          
-          if (userAnswer.length > 5) {
-            if (user === machine || distance <= 1) mark++;
-          } else {
-            if (user === machine) mark++;
-          }
-        }
-      }
-    } else {
-      sum += col_tasks[j];
+      currentTestIndex = j;
+      totalQuestions = col_tasks[j];
+      break;
     }
   }
 
-  alert(`Правильных ответов: ${mark} из ${col_tasks[k]}`);
+  if (currentTestIndex === -1) {
+    alert("Нет активных тестов для проверки");
+    return;
+  }
+
+  // Получаем все контейнеры вопросов
+  const questionContainers = document.querySelectorAll('.question-container');
+  totalQuestions = questionContainers.length; // Обновляем общее количество вопросов
+  
+  questionContainers.forEach(container => {
+    const questionIndex = parseInt(container.dataset.questionIndex);
+    try {
+      const answerData = JSON.parse(Answers[questionIndex]);
+      
+      if (answerData.type === "options" || (answerData.options && Object.values(answerData.options).some(v => v))) {
+        // Проверка вариантов ответа
+        const selectedOption = container.querySelector(`input[name="question-${questionIndex}"]:checked`);
+        if (selectedOption && selectedOption.value === answerData.correct) {
+          mark++;
+        }
+      } else {
+        // Проверка текстового ответа
+        const userAnswer = container.querySelector(`.answer-input[data-index="${questionIndex}"]`)?.value.trim().toLowerCase() || "";
+        const correctAnswer = (answerData.text || "").toLowerCase().trim();
+        
+        let userFixed = fixKeyboardLayout(userAnswer);
+        let correctFixed = fixKeyboardLayout(correctAnswer);
+        let distance = levenshtein(userFixed, correctFixed);
+        
+        if (userAnswer.length > 5) {
+          if (userFixed === correctFixed || distance <= 1) mark++;
+        } else {
+          if (userFixed === correctFixed) mark++;
+        }
+      }
+    } catch (e) {
+      console.error("Ошибка при проверке ответа:", e);
+    }
+  });
+
+  alert(`Правильных ответов: ${mark} из ${totalQuestions}`);
 }
 
 function fixKeyboardLayout(str) {

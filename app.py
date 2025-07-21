@@ -94,6 +94,7 @@ def update_answers():
     })
     return jsonify({"status": "ok"})
 
+
 @app.route("/wich_test", methods=["POST"])
 def wich_test():
     user = request.cookies.get("user")
